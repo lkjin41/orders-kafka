@@ -6,3 +6,9 @@ Pet-project: API + worker.
 ## Run API
 ```bash
 go run ./cmd/api
+```
+## Infra (Postgres + Kafka)
+```bash
+docker compose up -d
+docker compose ps
+```

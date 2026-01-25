@@ -12,3 +12,16 @@ go run ./cmd/api
 docker compose up -d
 docker compose ps
 ```
+## Database schema
+
+Tables:
+- orders
+- outbox (transactional outbox for Kafka)
+- processed_events (idempotency)
+- order_activity (read model)
+
+Apply migrations:
+
+```bash
+psql postgres://app:app@localhost:5432/app -f migrations/001_init.up.sql
+```

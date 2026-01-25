@@ -14,7 +14,7 @@ type Config struct {
 func MustLoad() Config {
 	cfg := Config{
 		HTTPPort:     getenv("HTTP_PORT", "8080"),
-		DatabaseURL:  getenv("DATABASE_URL", "postgres://app:app@localhost:5432/app?sslmode=disable"),
+		DatabaseURL:  getenv("DATABASE_URL", "postgres://app:app@localhost:5433/app?sslmode=disable"),
 		KafkaBrokers: getenv("KAFKA_BROKERS", "localhost:9092"),
 	}
 

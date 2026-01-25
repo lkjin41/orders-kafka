@@ -10,13 +10,30 @@ import (
 	"time"
 
 	"github.com/lkjin41/orders-kafka/internal/config"
+	"github.com/lkjin41/orders-kafka/internal/db"
 )
 
 func main() {
 	cfg := config.MustLoad()
 
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	pool := db.New(ctx, cfg.DatabaseURL)
+	defer pool.Close()
+
 	mux := http.NewServeMux()
+
 	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+		ctxPing, cancel := context.WithTimeout(r.Context(), 2*time.Second)
+		defer cancel()
+
+		if err := pool.Ping(ctxPing); err != nil {
+			w.WriteHeader(http.StatusServiceUnavailable)
+			_, _ = w.Write([]byte("db not ready"))
+			return
+		}
+
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte("ok"))
 	})
@@ -34,16 +51,20 @@ func main() {
 		}
 	}()
 
+	// graceful shutdown
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
 	<-stop
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-
 	log.Println("shutting down api...")
-	if err := srv.Shutdown(ctx); err != nil {
+
+	ctxShutdown, cancelShutdown := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancelShutdown()
+
+	if err := srv.Shutdown(ctxShutdown); err != nil {
 		log.Printf("api shutdown error: %v", err)
 	}
+
+	pool.Close()
 	log.Println("api stopped")
 }

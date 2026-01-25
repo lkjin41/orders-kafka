@@ -11,6 +11,8 @@ import (
 
 	"github.com/lkjin41/orders-kafka/internal/config"
 	"github.com/lkjin41/orders-kafka/internal/db"
+	"github.com/lkjin41/orders-kafka/internal/httpapi"
+	"github.com/lkjin41/orders-kafka/internal/orders"
 )
 
 func main() {
@@ -21,6 +23,9 @@ func main() {
 
 	pool := db.New(ctx, cfg.DatabaseURL)
 	defer pool.Close()
+
+	ordersRepo := orders.NewRepo(pool)
+	api := httpapi.New(ordersRepo)
 
 	mux := http.NewServeMux()
 
@@ -33,10 +38,11 @@ func main() {
 			_, _ = w.Write([]byte("db not ready"))
 			return
 		}
-
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte("ok"))
 	})
+
+	api.Register(mux)
 
 	srv := &http.Server{
 		Addr:              ":" + cfg.HTTPPort,
@@ -51,7 +57,6 @@ func main() {
 		}
 	}()
 
-	// graceful shutdown
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
 	<-stop
@@ -65,6 +70,5 @@ func main() {
 		log.Printf("api shutdown error: %v", err)
 	}
 
-	pool.Close()
 	log.Println("api stopped")
 }

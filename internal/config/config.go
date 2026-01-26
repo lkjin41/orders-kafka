@@ -1,8 +1,11 @@
 package config
 
 import (
+	"fmt"
 	"log"
 	"os"
+
+	"github.com/joho/godotenv"
 )
 
 type Config struct {
@@ -12,11 +15,17 @@ type Config struct {
 }
 
 func MustLoad() Config {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
 	cfg := Config{
 		HTTPPort:     getenv("HTTP_PORT", "8080"),
 		DatabaseURL:  getenv("DATABASE_URL", "postgres://app:app@localhost:5433/app?sslmode=disable"),
-		KafkaBrokers: getenv("KAFKA_BROKERS", "localhost:9092"),
+		KafkaBrokers: getenv("KAFKA_BROKERS", "kafka:9092"),
 	}
+	fmt.Println(cfg)
 
 	if cfg.HTTPPort == "" {
 		log.Fatal("HTTP_PORT is empty")

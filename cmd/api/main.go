@@ -12,6 +12,7 @@ import (
 	"github.com/lkjin41/orders-kafka/internal/config"
 	"github.com/lkjin41/orders-kafka/internal/db"
 	"github.com/lkjin41/orders-kafka/internal/httpapi"
+	"github.com/lkjin41/orders-kafka/internal/kafka"
 	"github.com/lkjin41/orders-kafka/internal/orders"
 )
 
@@ -20,11 +21,12 @@ func main() {
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
+	producer := kafka.NewProducer("localhost:9092")
 
 	pool := db.New(ctx, cfg.DatabaseURL)
 	defer pool.Close()
 
-	ordersRepo := orders.NewRepo(pool)
+	ordersRepo := orders.NewRepo(pool, producer)
 	api := httpapi.New(ordersRepo)
 
 	mux := http.NewServeMux()

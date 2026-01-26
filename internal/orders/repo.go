@@ -8,6 +8,7 @@ import (
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/lkjin41/orders-kafka/internal/kafka"
 )
 
 const (
@@ -15,11 +16,12 @@ const (
 )
 
 type Repo struct {
-	pool *pgxpool.Pool
+	pool          *pgxpool.Pool
+	kafkaProducer kafka.Producer
 }
 
-func NewRepo(pool *pgxpool.Pool) *Repo {
-	return &Repo{pool: pool}
+func NewRepo(pool *pgxpool.Pool, kafkaProducer kafka.Producer) *Repo {
+	return &Repo{pool: pool, kafkaProducer: kafkaProducer}
 }
 
 func (r *Repo) Create(ctx context.Context, req CreateOrderRequest) (Order, error) {
@@ -167,6 +169,14 @@ func (r *Repo) transition(ctx context.Context, id int64, eventType string, allow
 	`, "order", o.ID, eventType, payloadJSON)
 	if err != nil {
 		return Order{}, fmt.Errorf("insert outbox: %w", err)
+	}
+
+	producer := r.kafkaProducer
+	if err := producer.Publish(ctx, kafka.Message{
+		EventType: eventType,
+		Payload:   payloadJSON,
+	}); err != nil {
+		return Order{}, fmt.Errorf("failed to publish to Kafka: %w", err)
 	}
 
 	if err := tx.Commit(ctx); err != nil {

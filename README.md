@@ -24,5 +24,5 @@ Tables:
 Apply migrations:
 
 ```bash
-psql postgres://app:app@localhost:5432/app -f migrations/001_init.up.sql
+psql postgres://app:app@localhost:5433/app -f migrations/001_init.up.sql
 ```

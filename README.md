@@ -21,20 +21,16 @@ rm -f v5.19.0.tar.gz
 ```
 
 4. Измените [swagger-initializer.js](./static/swagger-ui/swagger-initializer.js):
-```
+```diff
    window.ui = SwaggerUIBundle({
-    url: "/openapi.yaml",
-    dom_id: '#swagger-ui',
-    deepLinking: true,
-    presets: [
-      SwaggerUIBundle.presets.apis,
-      SwaggerUIStandalonePreset
-    ],
-    plugins: [
-      SwaggerUIBundle.plugins.DownloadUrl
-    ],
-    layout: "StandaloneLayout"
-  });
++    urls: [
++      { url: "/openapi.yaml", name: "Notes" },
++    ],
+-    url: "https://petstore.swagger.io/v2/swagger.json",
+     dom_id: '#swagger-ui',
+     deepLinking: true,
+     presets: [
+```
 ```
 
 ## Docker (Postgres + Kafka)

@@ -25,7 +25,7 @@ func (a *API) Register(mux *http.ServeMux) {
 	mux.Handle("/docs/", http.StripPrefix("/docs/", http.FileServer(http.Dir("./static/swagger-ui"))))
 	mux.HandleFunc("/openapi.yaml", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/yaml; charset=utf-8")
-		http.ServeFile(w, r, "./static/openapi.yaml")
+		http.ServeFile(w, r, "./api/v1/openapi.yaml")
 	})
 }
 

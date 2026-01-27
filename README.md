@@ -42,6 +42,8 @@ rm -f v5.19.0.tar.gz
 docker compose up -d
 docker compose ps
 ```
+After running docker, the kafka ui is located here:
+- [Kafka UI](http://localhost:8081)
 ## Apply migrations:
 ```bash
 psql postgres://app:app@localhost:5433/app -f migrations/001_init.up.sql
@@ -50,14 +52,9 @@ psql postgres://app:app@localhost:5433/app -f migrations/001_init.up.sql
 ```bash
 go run ./cmd/api
 ```
+After launching the API, the swagger ui is located here:
+- [Swagger UI](http://localhost:8000/docs/)
 ## Run Worker
 ```bash
 go run ./cmd/worker
 ```
-## Database schema
-
-Tables:
-- orders
-- outbox (transactional outbox for Kafka)
-- processed_events (idempotency)
-- order_activity (read model)

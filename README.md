@@ -43,7 +43,7 @@ docker compose up -d
 docker compose ps
 ```
 After running docker, the kafka ui is located here:
-- [Kafka UI](http://localhost:8081)
+- [Kafka UI](http://localhost:8080)
 ## Apply migrations:
 ```bash
 psql postgres://app:app@localhost:5433/app -f migrations/001_init.up.sql

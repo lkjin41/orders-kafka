@@ -31,7 +31,6 @@ rm -f v5.19.0.tar.gz
      deepLinking: true,
      presets: [
 ```
-```
 
 ## Docker (Postgres + Kafka)
 ```bash

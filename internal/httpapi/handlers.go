@@ -20,8 +20,13 @@ func New(ordersRepo *orders.Repo) *API {
 func (a *API) Register(mux *http.ServeMux) {
 
 	mux.HandleFunc("/orders", a.handleOrders)
-
 	mux.HandleFunc("/orders/", a.handleOrderByID)
+
+	mux.Handle("/docs/", http.StripPrefix("/docs/", http.FileServer(http.Dir("./static/swagger-ui"))))
+	mux.HandleFunc("/openapi.yaml", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/yaml; charset=utf-8")
+		http.ServeFile(w, r, "./static/openapi.yaml")
+	})
 }
 
 func (a *API) handleOrders(w http.ResponseWriter, r *http.Request) {

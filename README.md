@@ -1,37 +1,5 @@
 
 # Orders
-## Swagger UI
-
-1. Скачайте последнюю версию Swagger UI
-```sh
-wget https://github.com/swagger-api/swagger-ui/archive/refs/tags/v5.19.0.tar.gz
-tar -xzf v5.19.0.tar.gz
-```
-
-2. Создайте директорию и скопируйте файлы
-```sh
-mkdir -p static/swagger-ui
-cp -router swagger-ui-5.19.0/dist/* static/swagger-ui/
-```
-
-3. Удалите ненужные файлы
-```sh
-rm -rf swagger-ui-5.19.0
-rm -f v5.19.0.tar.gz
-```
-
-4. Измените [swagger-initializer.js](./static/swagger-ui/swagger-initializer.js):
-```diff
-   window.ui = SwaggerUIBundle({
-+    urls: [
-+      { url: "/openapi.yaml", name: "Notes" },
-+    ],
--    url: "https://petstore.swagger.io/v2/swagger.json",
-     dom_id: '#swagger-ui',
-     deepLinking: true,
-     presets: [
-```
-
 ## Docker (Postgres + Kafka)
 ```bash
 docker compose up -d
